@@ -1,0 +1,72 @@
+<div class="page-header">
+	<h1>{{getString('Case Dashboard')}}</h1>
+</div>
+
+<div class="row marketing">
+
+  <ul class="nav nav-tabs">
+    <li><a ng-href="#/">{{getString('dashboard')}}</a></li>
+    <li><a ng-href="#/tasklist">{{getString('tasklist')}}</a></li>
+    <li><a ng-href="#/caseinstances">{{getString('allCases')}}</a></li>
+    <li class="active"><a ng-href="#/casedefinitions">{{getString('caseDefinitions')}}</a></li>
+    <li><a ng-href="#/newcase"><span class="glyphicon glyphicon-plus"></span> {{getString('newCase')}}</a></li>
+  </ul>
+
+  <div class="row top-buffer">
+
+    <div class="col-md-12" style="margin-top:40px;">
+         
+      <div style="float:right; margin-left: 1em;">
+        <form class="form-inline" role="form">
+          <div class="form-group">
+      <input id="searchTextDefinitions" type="text" class="form-control" placeholder="{{getString('search')}}..." ng-model="searchTextDefinitions">
+          </div>
+          <div class="form-group">
+            <a class="clear" ng-click="searchTextDefinitions=''"><span class="glyphicon glyphicon-remove"></span></a>
+          </div>
+        </form>
+      </div>
+
+      <h3 style="margin-top:10px;">{{getString('caseDefinitions')}}</h3>
+
+    </div>
+
+
+    <div class="col-md-12"> <!-- 4th row: Definitions Table -->
+
+      <div class="table-responsive">
+
+        <table class="table table-hover">
+          <thead>
+          <tr>
+            <th>{{getString('businessKey')}}</th>
+            <th>{{getString('name')}}</th>
+            <th>{{getString('latestVersion')}}</th>
+            <th>{{getString('runningInstances')}}</th>
+            <th>{{getString('technicalId')}}</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr
+            ng-repeat="def in resultedCaseDefs = (caseDefinitionsArrayContainer.caseDefinitionList | orderBy: casesOrderCondition.predicate : casesOrderCondition.reverse | filter : searchTextDefinitions)">
+            <td><a href="{{caseModelUrl}}{{def.id}}">
+                  <span class="glyphicon glyphicon-pencil"></span> {{def.key}}
+                </a>
+            </td>
+            <td>{{def.name}}</td>
+            <td>{{def.version}}</td>
+            <td> - </td>
+            <td>{{def.id}}</td>
+          </tr>
+          </tbody>
+        </table>
+
+        <p class="text-right">{{resultedCaseDefs.length}} {{getString('caseDefinitions')}}</p>
+
+      </div>
+
+    </div><!-- /.col -->
+
+
+  </div>
+</div>

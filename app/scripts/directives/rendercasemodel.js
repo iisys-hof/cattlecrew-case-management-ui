@@ -24,7 +24,7 @@ angular.module('cattlecrewCaseManagementUiApp')
             if(value){
               // remove old content on reload
               angular.element(document).find('#cmmnCanvas').children().remove();
-              var restAccess = 'http://localhost:8080/engine-rest';
+              var restAccess = 'https://broton.sc-hub.de/engine-rest';
               var CmmnViewer = window.CmmnJS; // CmmnViewer
               var viewer = new CmmnViewer({container: '#cmmnCanvas' });
               var container = angular.element(document).find('#cmmn-drop-zone');

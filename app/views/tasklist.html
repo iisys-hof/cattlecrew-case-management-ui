@@ -1,0 +1,106 @@
+<div class="page-header">
+	<h1>{{getString('Case Dashboard')}}</h1>
+</div>
+
+<div class="row marketing">
+
+  <ul class="nav nav-tabs">
+    <li><a ng-href="#/">{{getString('dashboard')}}</a></li>
+    <li class="active"><a ng-href="#/tasklist">{{getString('tasklist')}}</a></li>
+    <li><a ng-href="#/caseinstances">{{getString('allCases')}}</a></li>
+    <li><a ng-href="#/casedefinitions">{{getString('caseDefinitions')}}</a></li>
+    <li><a ng-href="#/newcase"><span class="glyphicon glyphicon-plus"></span> {{getString('newCase')}}</a></li>
+  </ul>
+
+  <div class="row top-buffer">
+
+    <div class="col-md-12">
+         
+      <div style="float:right; margin-left: 1em;">
+        <form class="form-inline" role="form">
+          <div class="form-group">
+		        <input id="searchText" type="text" class="form-control" placeholder="{{getString('search')}}..." ng-model="searchText">
+          </div>
+          <div class="form-group">
+            <a class="clear" ng-click="searchText=''"><span class="glyphicon glyphicon-remove"></span></a>
+          </div>
+        </form>
+      </div>
+
+      <div style="float:right;">
+        <form class="form-inline" role="form">
+          <div class="form-group">
+            <select id="filterCase" class="form-control" ng-model="selectedCaseDefinition"
+                    ng-options="caseDefinition.key for caseDefinition in caseDefinitionsArrayContainer.caseDefinitionList">
+		          <option value="">{{getString('filterByCase')}}</option>
+            </select>
+          </div>
+        </form>
+      </div>
+
+      <h3 style="margin-top:10px;">{{getString('myCaseTasks')}}</h3>
+
+    </div>
+
+
+    <div class="col-md-12"> <!-- 2nd row: Instances Table -->
+
+      <div class="table-responsive">
+          <table class="table table-hover" ng-table="tasksTable">
+            <thead>
+            <tr>
+              <th>{{getString('name')}}</th>
+              <th>{{getString('case')}}</th>
+              <th>{{getString('assignee')}}</th>
+              <th>{{getString('started')}}</th>
+              <th>{{getString('due')}}</th>
+              <th>{{getString('done')}}</th>
+              <th>{{getString('technicalId')}}</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr
+              ng-repeat-start="task in humanTasks = (taskList.tasklist | orderBy: 'startTime' : true | filter : {caseDefinitionKey : selectedCaseDefinition.key} | filter : searchText)">
+              <td><a ng-click="showDescription = !showDescription">{{task.name}}</a></td>
+              <td><a ng-href="#/casetasks/{{task.caseInstanceId}}">{{task.caseDefinitionKey}}</a></td>
+              <td>
+                <span ng-show="task.assignee">{{task.assignee.data.fullname}} <a ng-click="unclaimTask(task.id)" data-insert-loading-animation>
+                  <span class="glyphicon glyphicon-remove"></span></a>
+                </span>
+                <div ng-if="!task.assignee">
+                  <a class="btn btn-xs btn-primary" role="button" ng-click="claimTask(task.id)">Claim</a>
+                  <a class="btn btn-xs btn-default" role="button" data-show-input="assigneeInput" ng-click="pausePolling()">Assign</a>
+                  <form ng-submit="assignTask($event, task.id); " class="assigneeInput" style="display:none;">
+                    <angucomplete-alt id="assigneeAutoComplete"
+                        placeholder="Assign task to user..."
+                        pause="100"
+                        selected-object="selectedAssignee"
+                        remote-url="{{urlForUserAutocomplete}}"
+                        remote-url-data-field="list"
+                        title-field="displayName"
+                        minlength="2"
+                        input-class="form-control input-sm" />
+
+                      <input id="assignee" type="hidden" value="{{selectedAssignee.originalObject.id}}" />
+                  </form>
+                </div>
+              </td>
+              <td>{{task.startTimeAsString}}</td>
+              <td>{{task.due}}<span ng-if="!task.due"> - </span><span ng-if="assigneeInputIsOpen">assigneeInputIsOpen</span></td>
+              <td>{{task.endTimeAsString}}<span ng-if="!task.endTime">{{getString('open')}}</span></td>
+              <td><span class="long-id">{{task.id}}</span><span class="short-id">{{task.shortId}}...</span></td>
+            </tr>
+            <tr ng-repeat-end ng-show="task.description && showDescription" class="description">
+              <td colspan="6">{{task.description}}</td>
+            </tr>
+            </tbody>
+          </table>
+          <p class="text-right">{{humanTasks.length}} {{getString('tasks')}}</p>
+        </div>
+
+
+    </div><!-- /.col -->
+
+
+  </div>
+</div>

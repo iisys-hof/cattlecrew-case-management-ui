@@ -8,15 +8,17 @@
     <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
     <!-- build:css(.) styles/vendor.css -->
     <!-- bower:css -->
-    <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css" />
+    <link rel='stylesheet' href='bower_components/bootstrap/dist/css/bootstrap.css' />
     <!-- endbower -->
     <!-- endbuild -->
     <!-- build:css(.tmp) styles/main.css -->
     <link rel="stylesheet" href="styles/main.css">
     <link rel="stylesheet" href="styles/timeline.css">
+    <link rel="stylesheet" href="styles/angucomplete.css">
     <link rel="stylesheet" href="bower_components/dmn-js/dist/css/dmn-js.css">
     <link rel="stylesheet" href="bower_components/cmmn-js/dist/assets/diagram-js.css">
     <!-- endbuild -->
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:300' rel='stylesheet' type='text/css'>
   </head>
   <body ng-app="cattlecrewCaseManagementUiApp">
     <!--[if lte IE 8]>
@@ -24,6 +26,7 @@
     <![endif]-->
 
     <!-- Add your site or application content here -->
+    <!--
     <div class="header">
       <div class="navbar navbar-default" role="navigation">
         <div class="container-fluid">
@@ -36,7 +39,7 @@
               <span class="icon-bar"></span>
             </button>
 
-            <a class="navbar-brand" href="#/">CattleCrew Case Management UI</a>
+            <a class="navbar-brand" href="#/">CMMN Cases</a>
           </div>
 
           <div class="collapse navbar-collapse" id="js-navbar-collapse">
@@ -49,7 +52,7 @@
           </div>
         </div>
       </div>
-    </div>
+    </div> -->
 
     <div class="container-fluid">
     <div ng-view=""></div>
@@ -57,21 +60,11 @@
 
     <div class="footer">
       <div class="container-fluid">
-        <p><span class="glyphicon glyphicon-heart"></span> from the OPITZ CONSULTING team</p>
+        <p><a ng-href="" ng-click="setLocale('en-us')">English</a>
+        <a ng-href="" ng-click="setLocale('de-de')">Deutsch</a></p>
       </div>
     </div>
 
-
-    <!-- Google Analytics: change UA-XXXXX-X to be your site's ID -->
-     <script>
-       !function(A,n,g,u,l,a,r){A.GoogleAnalyticsObject=l,A[l]=A[l]||function(){
-       (A[l].q=A[l].q||[]).push(arguments)},A[l].l=+new Date,a=n.createElement(g),
-       r=n.getElementsByTagName(g)[0],a.src=u,r.parentNode.insertBefore(a,r)
-       }(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-
-       ga('create', 'UA-XXXXX-X');
-       ga('send', 'pageview');
-    </script>
 
     <!-- build:js(.) scripts/vendor.js -->
     <!-- bower:js -->
@@ -92,8 +85,10 @@
     <!-- build:js({.tmp,app}) scripts/scripts.js -->
     <script src="scripts/app.js"></script>
     <!-- custom directives -->
+    <script src="scripts/directives/angucomplete-alt.min.js"></script>
     <script src="scripts/directives/ccrtab.js"></script>
     <script src="scripts/directives/rendercasemodel.js"></script>
+    <script src="scripts/directives/jquerydirectives.js"></script>
     <!-- custom controller -->
     <script src="scripts/controllers/dashboard.js"></script>
     <script src="scripts/controllers/newcase.js"></script>
@@ -104,6 +99,7 @@
     <script src="scripts/controllers/caserawdata.js"></script>
     <!-- custom services -->
     <script src="scripts/services/caseService.js"></script>
+    <script src="scripts/services/userService.js"></script>
     <script src="scripts/services/utilService.js"></script>
     <script src="scripts/services/tabbingService.js"></script>
     <script src="scripts/services/localizationService.js"></script>
@@ -112,6 +108,9 @@
     <script src="scripts/services/camundaCacheService.js"></script>
     <script src="scripts/services/camundaConstantsService.js"></script>
     <script src="scripts/services/camundaDmnService.js"></script>
+    <!-- user specific services -->
+    <script src="scripts/services/shindigUserService.js"></script>
+    <script src="scripts/services/shindigUserCache.js"></script>
     <!-- endbuild -->
 </body>
 </html>

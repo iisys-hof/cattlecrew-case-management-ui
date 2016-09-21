@@ -8,7 +8,7 @@
  * Factory in the cattlecrewCaseManagementUiApp.
  */
 angular.module('cattlecrewCaseManagementUiApp')
-  .factory('camundaCacheService', function () {
+  .factory('camundaCacheService', function (userService) {
     //
     // local namespace
     //
@@ -23,6 +23,10 @@ angular.module('cattlecrewCaseManagementUiApp')
 
     srv._caseDefinitionsArrayContainer = {
       caseDefinitionList: []
+    };
+
+    srv._tasklistContainer = {
+      tasklist : []
     };
 
     srv._cases = {};
@@ -43,8 +47,8 @@ angular.module('cattlecrewCaseManagementUiApp')
             documentLink: 'assets/claimfile.pdf'
           },
           {
-            documentName: 'overview.pdf',
-            documentLink: 'assets/overview.pdf'
+            documentName: 'casedocument.pdf',
+            documentLink: 'assets/casedocument.pdf'
           }
         ],
         desicions: []
@@ -56,6 +60,10 @@ angular.module('cattlecrewCaseManagementUiApp')
      */
     srv.getCasesOverviewArrayContainer = function() {
       return srv._casesOverviewArrayContainer;
+    };
+
+    srv.getTasklistContainer = function() {
+      return srv._tasklistContainer;
     };
 
     srv.getCase = function(caseId) {
@@ -87,6 +95,45 @@ angular.module('cattlecrewCaseManagementUiApp')
 
       caseInstances.forEach(function(element) {
         srv._casesOverviewArrayContainer.casesList.push(srv.createDetailsObject(element));
+      });
+    };
+
+    srv.putTasklistinCache = function(tasklist) {
+      srv._tasklistContainer.tasklist = [];
+
+      tasklist.forEach(function(activity) {
+        var shortId = activity.id.substring(0, 8),
+            dueAsString = null,
+            endTimeAsString = null,
+            startTimeAsString = null;
+
+        if(activity.due) {
+          dueAsString = srv.formatIsoDateString(activity.due);
+        }
+        if(activity.endTime) {
+          endTimeAsString = srv.formatIsoDateString(activity.endTime);
+        }
+        if(activity.startTime) {
+          startTimeAsString = srv.formatIsoDateString(activity.startTime);
+        }
+
+        srv._tasklistContainer.tasklist.push({
+          id: activity.id,
+          shortId: shortId,
+          assignee: activity.assignee,
+          caseDefinitionKey: activity.caseDefinitionKey,
+          caseInstanceId: activity.caseInstanceId,
+          description: activity.description,
+          due: activity.due,
+          dueAsString: dueAsString,
+          endTime: activity.endTime,
+          endTimeAsString: endTimeAsString,
+          name: activity.name,
+          owner: activity.owner,
+          startTime: activity.startTime,
+          startTimeAsString: startTimeAsString
+        });
+
       });
     };
 
@@ -126,6 +173,7 @@ angular.module('cattlecrewCaseManagementUiApp')
       srv.initCaseInCache(caseId);
 
       var activities = [];
+      console.log('activitiesFromRest',activitiesFromRest);
 
       activitiesFromRest.forEach(function(activity) {
         var name = activity.caseActivityName;
@@ -141,6 +189,48 @@ angular.module('cattlecrewCaseManagementUiApp')
       });
 
       srv._cases[caseId].data.activities = activities;
+    };
+
+    srv.putTasksForCase = function(tasksFromRest, caseId) {
+      srv.initCaseInCache(caseId);
+
+      var tasks = [];
+      console.log('tasksFromRest',tasksFromRest);
+
+      tasksFromRest.forEach(function(activity) {
+        var shortId = activity.id.substring(0, 8),
+            dueAsString = null,
+            endTimeAsString = null,
+            startTimeAsString = null;
+
+        if(activity.due) {
+          dueAsString = srv.formatIsoDateString(activity.due);
+        }
+        if(activity.endTime) {
+          endTimeAsString = srv.formatIsoDateString(activity.endTime);
+        }
+        if(activity.startTime) {
+          startTimeAsString = srv.formatIsoDateString(activity.startTime);
+        }
+
+        tasks.push({
+          id: activity.id,
+          shortId: shortId,
+          assignee: activity.assignee,
+          caseInstanceId: activity.caseInstanceId,
+          description: activity.description,
+          due: activity.due,
+          dueAsString: dueAsString,
+          endTime: activity.endTime,
+          endTimeAsString: endTimeAsString,
+          name: activity.name,
+          owner: activity.owner,
+          startTime: activity.startTime,
+          startTimeAsString: startTimeAsString
+        });
+      });
+
+      srv._cases[caseId].data.humanTasks = tasks;
     };
 
     srv.putDetailsInformationForCase = function(details) {
@@ -235,7 +325,7 @@ angular.module('cattlecrewCaseManagementUiApp')
         caseDefinition: caseDefinition,
         state: state,
         createDateAsString: srv.formatIsoDateString(element.createTime),
-        createByAsString:  srv.getUserById(element.createUserId),
+        createByAsString:  srv._getUserFullnameById(element.createUserId),
         lastEditedString: element.lastEditedString, // TODO impl remove if updateXXX is set and lastEditedString is passed
         updateTime: null, // TODO impl
         updateDateAsString: null, // TODO impl
@@ -268,8 +358,8 @@ angular.module('cattlecrewCaseManagementUiApp')
       return new Date(isoDateString).toLocaleDateString('de-DE', dateOptions);
     };
 
-    srv.getUserById = function(userId) {
-      return userId !== null ? userId : 'John Doe'; // TODO impl fetching user by id
+    srv._getUserFullnameById = function(userId) {
+      return userService.getUserFullnameById(userId);
     };
 
     //
@@ -279,11 +369,17 @@ angular.module('cattlecrewCaseManagementUiApp')
       getCasesOverviewArrayContainer: function() {
         return srv.getCasesOverviewArrayContainer();
       },
+      getTasklistContainer: function() {
+        return srv.getTasklistContainer();
+      },
       getCase: function(caseId) {
         return srv.getCase(caseId);
       },
       putValuesInCache: function(caseInstances) {
         srv.putValuesInCache(caseInstances);
+      },
+      putTasklistinCache: function(tasklist) {
+        srv.putTasklistinCache(tasklist);
       },
       putMilestonesForCase: function(milestonesFromRest, caseId) {
         srv.putMilestonesForCase(milestonesFromRest, caseId);
@@ -296,6 +392,9 @@ angular.module('cattlecrewCaseManagementUiApp')
       },
       putActivitiesForCase: function(activitiesFromRest, caseId) {
         srv.putActivitiesForCase(activitiesFromRest, caseId);
+      },
+      putTasksForCase: function(activitiesFromRest, caseId) {
+        srv.putTasksForCase(activitiesFromRest, caseId);
       },
       putDetailsInformationForCase: function(details) {
         srv.putDetailsInformationForCase(details);

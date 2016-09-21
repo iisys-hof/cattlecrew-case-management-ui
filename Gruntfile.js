@@ -449,7 +449,7 @@ module.exports = function (grunt) {
         files: [
           {
             expand: true,
-            cwd: '<%= yeoman.dist %>',
+            cwd: 'build',
             src: ['**'],
             dest: '.'
           }

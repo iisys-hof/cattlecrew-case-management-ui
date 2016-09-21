@@ -26,7 +26,11 @@ angular.module('cattlecrewCaseManagementUiApp')
      	'dashboard':{
 	     'de-de': 'Dashboard',
 	     'en-us': 'Dashboard'
-     	},
+    },
+     	'Case Dashboard':{
+	     'de-de': 'Fall Dashboard',
+	     'en-us': 'Case Dashboard'
+    },
 	'New Case':{
 		'de-de': 'Neuer Fall',
 		'en-us': 'New Case'
@@ -39,6 +43,14 @@ angular.module('cattlecrewCaseManagementUiApp')
 		'de-de': 'Übersicht über alle vorhandene Fälle',
 		'en-us': 'Displaying all existing cases'
 	},
+	'caseInstances':{
+		'de-de': 'Fall-Instanzen',
+		'en-us': 'Case Instances'
+	},
+	'caseDefinitions':{
+		'de-de': 'Fall-Definitionen',
+		'en-us': 'Case Definitions'
+	},
 	'search':{
 		'de-de': 'Suche',
 		'en-us': 'Search'
@@ -46,6 +58,10 @@ angular.module('cattlecrewCaseManagementUiApp')
 	'filterCase':{
 		'de-de': 'Filter Fälle',
 		'en-us': 'Filter Case'
+	},
+	'filterByCase':{
+		'de-de': 'Filter nach Fall',
+		'en-us': 'Filter by Case'
 	},
 	'businessId':{
 		'de-de': 'Geschäfts-ID',
@@ -57,7 +73,7 @@ angular.module('cattlecrewCaseManagementUiApp')
 	},
 	'technicalId':{
 		'de-de': 'Technische ID',
-		'en-us': 'Techical ID'
+		'en-us': 'Technical ID'
 	},
 	'created':{
 		'de-de': 'Erstellt am',
@@ -74,6 +90,10 @@ angular.module('cattlecrewCaseManagementUiApp')
 	'casesAreDisplayed':{
 		'de-de': 'Fälle werden angezeigt',
 		'en-us': 'Cases are displayed'
+	},
+	'casesAreDeployed':{
+		'de-de': 'Fälle sind veröffentlicht',
+		'en-us': 'Cases are deployed'
 	},
 	'fromTheOptizTeam':{
 		'de-de': 'von dem OPITZ CONSULTING Team',
@@ -134,6 +154,83 @@ angular.module('cattlecrewCaseManagementUiApp')
 	'businessKey':{
 		'de-de': 'Business Key',
 		'en-us': 'Business Key'
+	},
+	// schub:
+	'actions':{
+		'de-de': 'Aktionen',
+		'en-us': 'Actions'
+	},
+	'allCases':{
+		'de-de': 'Alle Fälle',
+		'en-us': 'All Cases'
+	},
+	'allTasks':{
+		'de-de': 'Alle Aufgaben',
+		'en-us': 'All Tasks'
+	},
+	'assignee':{
+		'de-de': 'Beauftragter',
+		'en-us': 'Assignee'
+	},
+	'caseDetails':{
+		'de-de': 'Fall Details',
+		'en-us': 'Case Details'
+	},
+	'completed':{
+		'de-de': 'fertiggestellt',
+		'en-us': 'completed'
+	},
+	'done':{
+		'de-de': 'Fertig',
+		'en-us': 'Done'
+	},
+	'due':{
+		'de-de': 'Fälligkeit',
+		'en-us': 'Due'
+	},
+	'end':{
+		'de-de': 'Ende',
+		'en-us': 'End'
+	},
+	'filterDone':{
+		'de-de': 'Filter Fertig',
+		'en-us': 'Filter Done'
+	},
+	'latestVersion':{
+		'de-de': 'Aktuellste Version',
+		'en-us': 'Latest Version'
+	},
+	'myCaseInstances':{
+		'de-de': 'Meine Fälle',
+		'en-us': 'My Case Instances'
+	},
+	'myCases':{
+		'de-de': 'Meine Fälle',
+		'en-us': 'My Cases'
+	},
+	'myCaseTasks':{
+		'de-de': 'Meine Fall-Aufgaben',
+		'en-us': 'My Case Tasks'
+	},
+	'open':{
+		'de-de': 'offen',
+		'en-us': 'open'
+	},
+	'runningInstances':{
+		'de-de': 'Laufende Instanzen',
+		'en-us': 'Running Instances'
+	},
+	'started':{
+		'de-de': 'Gestartet',
+		'en-us': 'Started'
+	},
+	'tasklist':{
+		'de-de': 'Aufgaben',
+		'en-us': 'Tasklist'
+	},
+	'tasks':{
+		'de-de': 'Aufgaben',
+		'en-us': 'Tasks'
 	}
     };
 

@@ -8,7 +8,9 @@
  * Controller of the cattlecrewCaseManagementUiApp
  */
 angular.module('cattlecrewCaseManagementUiApp')
-  .controller('DashboardCtrl', function($scope, $locale, caseService, localizationService) {
+  .controller('DashboardCtrl', function($scope, $locale, caseService, localizationService, camundaConstantsService) {
+
+    $scope.currentUser = 'baerbel';
 
     $scope.setLocale = function(id){
 	    $locale.id = id;
@@ -20,6 +22,8 @@ angular.module('cattlecrewCaseManagementUiApp')
 
     $scope.initView = function() {
 
+      $scope.caseModelUrl = camundaConstantsService.modelUrl;
+
       $scope.casesOrderCondition = {
         predicate: 'createTime',
         reverse: true
@@ -28,9 +32,15 @@ angular.module('cattlecrewCaseManagementUiApp')
       caseService.updateCaseDefinitions();
       $scope.caseDefinitionsArrayContainer = caseService.getCaseDefinitionsArrayContainer();
 
+      caseService.updateTasklist();
+      $scope.taskList = caseService.getTasklistForCurrentUser();
+
       caseService.updateCasesOverview();
       $scope.casesOverviewArrayContainer = caseService.getCasesOverviewArrayContainer();
       caseService.startPolling();
+
+      console.log('$scope.casesOverviewArrayContainer',$scope.casesOverviewArrayContainer);
+      console.log('$scope.taskList',$scope.taskList);
     };
 
     $scope.initView();

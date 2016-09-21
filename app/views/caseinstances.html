@@ -1,22 +1,13 @@
 <div class="page-header">
-  <div class="settings dropdown">
-    <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-      <span class="glyphicon glyphicon-option-vertical"></span>
-    </button>
-    <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenu1">
-      <li><a href="#">Stop Polling</a></li>
-    </ul>
-  </div>
-
 	<h1>{{getString('Case Dashboard')}}</h1>
 </div>
 
 <div class="row marketing">
 
   <ul class="nav nav-tabs">
-    <li class="active"><a ng-href="#/">{{getString('dashboard')}}</a></li>
+    <li><a ng-href="#/">{{getString('dashboard')}}</a></li>
     <li><a ng-href="#/tasklist">{{getString('tasklist')}}</a></li>
-    <li><a ng-href="#/caseinstances">{{getString('allCases')}}</a></li>
+    <li class="active"><a ng-href="#/caseinstances">{{getString('allCases')}}</a></li>
     <li><a ng-href="#/casedefinitions">{{getString('caseDefinitions')}}</a></li>
     <li><a ng-href="#/newcase"><span class="glyphicon glyphicon-plus"></span> {{getString('newCase')}}</a></li>
   </ul>
@@ -47,7 +38,7 @@
         </form>
       </div>
 
-      <h3 style="margin-top:10px;">{{getString('myCases')}}</h3>
+      <h3 style="margin-top:10px;">{{getString('allCases')}}</h3>
 
     </div>
 
@@ -69,7 +60,7 @@
           </thead>
           <tbody>
           <tr
-            ng-repeat="case in resultedCases = (casesOverviewArrayContainer.casesList | orderBy: casesOrderCondition.predicate : casesOrderCondition.reverse | filter: {caseDefinition : selectedCaseDefinition.key} : true | filter: searchText) | filter: {createUserId:currentUser}">
+            ng-repeat="case in resultedCases = (casesOverviewArrayContainer.casesList | orderBy: casesOrderCondition.predicate : casesOrderCondition.reverse | filter : {caseDefinition : selectedCaseDefinition.key} : true | filter : searchText)">
             <td><a ng-href="#/casetasks/{{case.id}}"><span class="glyphicon glyphicon-zoom-in"></span> {{case.businessKey}}</a></td>
             <td>{{case.caseDefinition}}</td>
             <td><span ng-if="case.createByAsString">{{case.createByAsString}} at {{case.createDateAsString}}</span></td>

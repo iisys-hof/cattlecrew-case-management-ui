@@ -1,0 +1,158 @@
+<div class="page-header">
+  <div class="settings dropdown">
+    <button class="btn btn-default dropdown-toggle" id="settingsDropdown" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+      <span class="glyphicon glyphicon-option-vertical"></span>
+    </button>
+    <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="settingsDropdown">
+      <li><a ng-if="pollingActive" ng-click="stopPolling()">Stop Polling</a></li>
+      <li><a ng-if="!pollingActive" ng-click="startPolling()">Start Polling</a></li>
+    </ul>
+  </div>
+
+  <a class="backlink" ng-href="#/">
+    <span class="glyphicon glyphicon-chevron-left"></span>
+  </a>
+  <h1>{{getString('caseDetails')}}</h1>
+</div>
+
+<div class="row marketing">
+
+  <ul class="nav nav-tabs">
+    <li><a ng-href="#/casedetails/{{case.data.details.id}}">{{getString('caseDetails')}}</a></li>
+    <li class="active"><a ng-href="#/casetasks/{{case.data.details.id}}">{{getString('tasks')}}</a></li>
+    <li><a ng-href="#/casemodel/{{case.data.details.id}}">Case Model</a></li>
+    <li><a ng-href="#/casedecisionhistory/{{case.data.details.id}}">Case Decision History</a></li>
+    <li><a ng-href="#/caserawdata/{{case.data.details.id}}">Case Raw Data</a></li>
+  </ul>
+
+  <div class="row top-buffer">
+
+    <div class="panel-group">
+
+      <div class="col-md-9">
+
+        <div ng-if="isLoading" class="loading" style="float: left;">
+          <!-- We make this div spin -->
+          <div class="spinner">
+            <!-- Mask of the quarter of circle -->
+            <div class="mask">
+              <!-- Inner masked circle -->
+              <div class="maskedCircle"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="filters clearfix">         
+          <div style="float:right; margin-left: 1em;">
+            <form class="form-inline" role="form">
+              <div class="form-group">
+                <input id="searchTask" type="text" class="form-control" placeholder="{{getString('search')}}..." ng-model="searchTask">
+              </div>
+              <div class="form-group">
+                <a class="clear" ng-click="searchTask=''"><span class="glyphicon glyphicon-remove"></span></a>
+              </div>
+            </form>
+          </div>
+
+          <div style="float:right;">
+            <form class="form-inline" role="form">
+              <div class="form-group">
+                <select id="filterCase" class="form-control" ng-model="selectedDone">
+                  <option value="">- {{getString('allTasks')}} -</option>
+                  <option value="open">{{getString('open')}}</option>
+                  <option value="completed">{{getString('completed')}}</option>
+                </select>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="table table-hover" ng-table="tasksTable">
+            <thead>
+            <tr>
+              <th>{{getString('name')}}</th>
+              <th>{{getString('assignee')}}</th>
+              <th>{{getString('started')}}</th>
+              <th>{{getString('due')}}</th>
+              <th>{{getString('done')}}</th>
+              <th>{{getString('technicalId')}}</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr
+              ng-repeat-start="task in humanTasks = (case.data.humanTasks | orderBy: casesOrderCondition.predicate : casesOrderCondition.reverse | filter : searchTask)">
+              <td><a ng-click="showDescription = !showDescription">{{task.name}}</a></td>
+              <td>
+                <span ng-show="task.assignee">{{task.assignee.data.fullname}} <a ng-click="unclaimTask(task.id)" data-insert-loading-animation>
+                  <span class="glyphicon glyphicon-remove"></span></a>
+                </span>
+                <div ng-if="!task.assignee">
+                  <a class="btn btn-xs btn-primary" role="button" ng-click="claimTask(task.id)">Claim</a>
+                  <a class="btn btn-xs btn-default" role="button" data-show-input="assigneeInput" ng-click="pausePolling()">Assign</a>
+                  <form ng-submit="assignTask($event, task.id); " class="assigneeInput" style="display:none;">
+                      <angucomplete-alt id="assigneeAutoComplete"
+                          placeholder="Assign task to user..."
+                          pause="100"
+                          selected-object="selectedAssignee"
+                          selected-object-data="task.id"
+                          remote-url="{{urlForUserAutocomplete}}"
+                          remote-url-data-field="list"
+                          title-field="displayName"
+                          minlength="2"
+                          input-class="form-control input-sm"
+                       />
+
+                    <input id="assignee" type="hidden" value="{{selectedAssignee.originalObject.id}}" />
+                  </form>
+                </div>
+              </td>
+              <td>{{task.startTimeAsString}}</td>
+              <td>{{task.due}}<span ng-if="!task.due"> - </span><span ng-if="assigneeInputIsOpen">assigneeInputIsOpen</span></td>
+              <td>{{task.endTimeAsString}}<span ng-if="!task.endTime">{{getString('open')}}</span></td>
+              <td><span class="long-id">{{task.id}}</span><span class="short-id">{{task.shortId}}...</span></td>
+            </tr>
+            <tr ng-repeat-end ng-show="task.description && showDescription" class="description">
+              <td colspan="6">{{task.description}}</td>
+            </tr>
+            </tbody>
+          </table>
+          <p class="text-right">{{humanTasks.length}} {{getString('tasks')}}</p>
+        </div>
+
+      </div>
+
+      <div class="col-md-3">
+
+        <div class="panel panel-default">
+          <div class="panel panel-heading">
+            <h4>What happened so far <span class="badge pull-right">{{case.data.milestones.length}}</span></h4>
+          </div>
+          <div class="panel panel-body">
+            <ul class="timeline" ng-repeat="milestone in resultedMilestones = (case.data.milestones | orderBy: 'state')">
+              <li ng-class="$odd ? 'timeline-inverted' : 'timeline'">
+                <div class="timeline-badge">
+                  <div ng-show="milestone.state === 'ATTAINED'" class="glyphicon glyphicon-ok"></div>
+                  <div ng-show="milestone.state === 'NOT_ATTAINED'" class="glyphicon glyphicon-time"></div>
+                </div>
+                <div class="timeline-panel">
+                  <div class="timeline-heading">
+                    <h4 class="timeline-title">{{milestone.objectDisplayName}}</h4>
+                  </div>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+      </div>
+
+
+    </div>
+
+  </div>
+
+</div>
+
+
+

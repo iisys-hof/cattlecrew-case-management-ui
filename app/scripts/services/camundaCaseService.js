@@ -8,7 +8,7 @@
  * Factory in the cattlecrewCaseManagementUiApp.
  */
 angular.module('cattlecrewCaseManagementUiApp')
-  .factory('camundaCaseService', function ($resource, $q, $timeout, camundaConstantsService, camundaCacheService, utilService) {
+  .factory('camundaCaseService', function ($resource, $q, $timeout, camundaConstantsService, camundaCacheService, utilService, userService) {
     //
     // local namespace
     //
@@ -18,6 +18,7 @@ angular.module('cattlecrewCaseManagementUiApp')
 
     // parameters for polling data from server
     srv._serverPollingDelay = camundaConstantsService.serverPollingDelay;
+    srv._serverPollingPauseDelay = camundaConstantsService.serverPollingPauseDelay;
     srv._pollingActive = false;
     srv._lastRequestedCaseId = undefined;
 
@@ -46,6 +47,10 @@ angular.module('cattlecrewCaseManagementUiApp')
       get: {method: 'GET', isArray: true}
     });
 
+    srv._resourceHumanTasks = $resource(srv._baseUrl + '/history/task?caseInstanceId=:caseId', {}, {
+      get: {method: 'GET', isArray: true}
+    });
+
     srv._resourceActiveTasks = $resource(srv._baseUrl + '/history/case-activity-instance?active=true&caseInstanceId=:caseId', {}, {
       get: {method: 'GET', isArray: true}
     });
@@ -58,12 +63,28 @@ angular.module('cattlecrewCaseManagementUiApp')
       get: {method: 'GET', isArray: true}
     });
 
+    srv._resourceAllAssigneeTasks = $resource(srv._baseUrl + '/history/task?taskAssignee=:userId&unfinished=true', {}, {
+      get: {method: 'GET', isArray: true}
+    });
+
     srv._resourceActivity = $resource(srv._baseUrl + '/case-execution/:activityId/manual-start', {}, {
       activate: {method: 'POST', isArray: true}
     });
 
     srv._resourceNewInstance = $resource(srv._baseUrl + '/case-definition/key/:key/create', {}, {
       create: {method: 'POST'}
+    });
+
+    srv._resourceClaimTask = $resource(srv._baseUrl + '/task/:id/claim', {}, {
+      claim: {method: 'POST'}
+    });
+
+    srv._resourceAssignTask = $resource(srv._baseUrl + '/task/:id/assignee', {}, {
+      assign: {method: 'POST'}
+    });
+
+    srv._resourceUnclaimTask = $resource(srv._baseUrl + '/task/:id/unclaim', {}, {
+      unclaim: {method: 'POST'}
     });
 
     srv.loadCases = function() {
@@ -106,6 +127,7 @@ angular.module('cattlecrewCaseManagementUiApp')
       srv.loadParent(caseId);
 
       srv.enrichWithActivities(caseId);
+      srv.enrichWithHumanTasks(caseId);
       srv.enrichWithDetailsInformation(caseId);
 
       var promise1 = srv.enrichForAuditTrail(caseId);
@@ -132,6 +154,46 @@ angular.module('cattlecrewCaseManagementUiApp')
         camundaCacheService.putActivitiesForCase(activities, caseId);
       });
     };
+
+    // iisys:
+    srv.enrichWithHumanTasks = function(caseId) {
+      var humanTasks = srv._resourceHumanTasks.get({caseId: caseId}).$promise;
+
+      $q.all([humanTasks]).then(function(result) {
+        var tasks = [];
+
+        result.forEach(function(element) {
+          Array.prototype.push.apply(tasks, element);
+        });
+
+        tasks.forEach(function(task) {
+          if(task.assignee) {
+            task.assignee = userService.getUserById(task.assignee);
+          }
+        });
+
+        camundaCacheService.putTasksForCase(tasks, caseId);
+      });
+    };
+
+    srv.updateTasklistForAssignee = function(assigneeUserId) {
+      srv._resourceAllAssigneeTasks.get({userId: assigneeUserId}, function(tasks) {
+        var caseTasklist = [];
+
+        tasks.forEach(function(task) {
+          if(task.caseInstanceId) {
+            if(task.assignee) {
+              task.assignee = userService.getUserById(task.assignee);
+            }
+
+            caseTasklist.push(task);
+          }
+        });
+        camundaCacheService.putTasklistinCache(caseTasklist);
+      });
+    };
+
+    // iisys END
 
      srv.enrichForAuditTrail = function(caseId) {
       var activeTasksResult = srv._resourceActiveTasks.get({caseId: caseId}).$promise;
@@ -189,6 +251,11 @@ angular.module('cattlecrewCaseManagementUiApp')
       if (srv._pollingActive) {
         srv.updateCasesOverview();
 
+        var assignee = userService.getLoggedInUser();
+        if(assignee && assignee.data && assignee.data.id) {
+          srv.updateTasklistForAssignee( assignee.data.id );
+        }
+
         if (srv._lastRequestedCaseId) {
           srv.getEntireCase(srv._lastRequestedCaseId);
         }
@@ -201,6 +268,20 @@ angular.module('cattlecrewCaseManagementUiApp')
       srv._lastRequestedCaseId = caseId;
       srv._pollingActive = true;
       srv.pollDataFromServer();
+    };
+
+    srv.pausePolling = function() {
+      if(srv._pollingActive) {
+        console.log('Pause polling...');
+        srv._stopPolling();
+
+        $timeout(function() {
+            if(!srv._pollingActive) {
+              console.log('Start polling again.');
+              srv.startPolling(srv._lastRequestedCaseId);
+            }
+          }, srv._serverPollingPauseDelay);
+      }
     };
 
     srv._stopPolling = function() {
@@ -233,6 +314,30 @@ angular.module('cattlecrewCaseManagementUiApp')
       });
     };
 
+    srv.claimTask = function(taskId, userId) {
+      srv._resourceClaimTask.claim({id: taskId}, {userId: userId}, function(result) {
+        console.log('Task successfully claimed. ' + result);
+      }, function(error) {
+        console.log('Error occurred during claiming a task: ' + error);
+      });
+    };
+
+    srv.assignTask = function(taskId, userId) {
+      srv._resourceAssignTask.assign({id: taskId}, {userId: userId}, function(result) {
+        console.log('Task successfully assigned to '+userId+'. ' + result);
+      }, function(error) {
+        console.log('Error occurred during assigning a task: ' + error);
+      });
+    };
+
+    srv.unclaimTask = function(taskId) {
+      srv._resourceUnclaimTask.unclaim({id: taskId}, {}, function(result) {
+        console.log('Task successfully unclaimed. ' + result);
+      }, function(error) {
+        console.log('Error occurred during unclaiming task: ' + error);
+      });
+    };
+
     //
     // Public API
     //
@@ -240,14 +345,23 @@ angular.module('cattlecrewCaseManagementUiApp')
       updateCasesOverview: function() {
         srv.updateCasesOverview();
       },
+      updateTasklistForAssignee: function(assigneeUserId) {
+        return srv.updateTasklistForAssignee(assigneeUserId);
+      },
       updateCaseDefinitions: function() {
         srv.updateCaseDefinitions();
       },
       startPolling: function(caseId) {
         srv.startPolling(caseId);
       },
+      pausePolling: function() {
+        srv.pausePolling();
+      },
       stopPolling: function() {
         srv._stopPolling();
+      },
+      pollingActive: function() {
+        return srv._pollingActive;
       },
       getEntireCase: function(caseId) {
         return srv.getEntireCase(caseId);
@@ -257,6 +371,15 @@ angular.module('cattlecrewCaseManagementUiApp')
       },
       startActivity: function(caseId, activityDefinitionId) {
         srv.startActivity(caseId, activityDefinitionId);
+      },
+      claimTask: function(taskId, userId) {
+        srv.claimTask(taskId, userId);
+      },
+      assignTask: function(taskId, userId) {
+        srv.assignTask(taskId, userId);
+      },
+      unclaimTask: function(taskId) {
+        srv.unclaimTask(taskId);
       }
     };
   });

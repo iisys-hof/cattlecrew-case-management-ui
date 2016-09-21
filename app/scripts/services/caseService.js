@@ -8,7 +8,7 @@
  * Factory in the cattlecrewCaseManagementUiApp.
  */
 angular.module('cattlecrewCaseManagementUiApp')
-  .factory('caseService', function (camundaCaseService, camundaCacheService, camundaDmnService) {
+  .factory('caseService', function (camundaCaseService, camundaCacheService, camundaDmnService, userService) {
     //
     // local namespace
     //
@@ -17,6 +17,8 @@ angular.module('cattlecrewCaseManagementUiApp')
     srv._caseService = camundaCaseService;
     srv._cache = camundaCacheService;
     srv._dmnService = camundaDmnService;
+
+    srv._userService = userService;
 
     //
     // Service logic
@@ -38,6 +40,18 @@ angular.module('cattlecrewCaseManagementUiApp')
       return srv._cache.getCase(caseId);
     };
 
+    srv.updateTasklist = function() {
+      var assignee = srv._userService.getLoggedInUser();
+
+      if(assignee && assignee.data && assignee.data.id) {
+        srv._caseService.updateTasklistForAssignee( assignee.data.id );
+      }
+    };
+
+    srv.getTasklistForCurrentUser = function() {
+      return srv._cache.getTasklistContainer();
+    };
+
     srv.startActivity = function(caseId, activityDefinitionId) {
       return srv._caseService.startActivity(caseId, activityDefinitionId);
     };
@@ -46,8 +60,16 @@ angular.module('cattlecrewCaseManagementUiApp')
       srv._caseService.startPolling(caseId);
     };
 
+    srv.pausePolling = function() {
+      srv._caseService.pausePolling();
+    };
+
     srv.stopPolling = function() {
       srv._caseService.stopPolling();
+    };
+
+    srv.pollingActive = function() {
+      return srv._caseService.pollingActive();
     };
 
     srv.createCaseInstance = function(key, requestData) {
@@ -60,6 +82,18 @@ angular.module('cattlecrewCaseManagementUiApp')
 
     srv.getCaseDefinitionsArrayContainer = function() {
       return srv._cache.getCaseDefinitionsArrayContainer();
+    };
+
+    srv.claimTask = function(taskId, userId) {
+      srv._caseService.claimTask(taskId, userId);
+    };
+
+    srv.assignTask = function(taskId, userId) {
+      srv._caseService.assignTask(taskId, userId);
+    };
+
+    srv.unclaimTask = function(taskId) {
+      srv._caseService.unclaimTask(taskId);
     };
 
     //
@@ -81,8 +115,14 @@ angular.module('cattlecrewCaseManagementUiApp')
       startPolling: function(caseId) {
         srv.startPolling(caseId);
       },
+      pausePolling: function() {
+        srv.pausePolling();
+      },
       stopPolling: function() {
         srv.stopPolling();
+      },
+      pollingActive: function() {
+        return srv.pollingActive();
       },
       getCase: function(caseId) {
         return srv.getCase(caseId);
@@ -90,11 +130,26 @@ angular.module('cattlecrewCaseManagementUiApp')
       getEntireCase: function(entireCaseID) {
         return srv.getEntireCase(entireCaseID);
       },
+      updateTasklist: function() {
+        srv.updateTasklist();
+      },
+      getTasklistForCurrentUser: function() {
+        return srv.getTasklistForCurrentUser();
+      },
       createCaseInstance: function(key, requestData) {
         return srv.createCaseInstance(key, requestData);
       },
       startActivity: function(caseId, activityDefinitionId, startActivityComment) {
         return srv.startActivity(caseId, activityDefinitionId, startActivityComment);
+      },
+      claimTask: function(taskId, userId) {
+        return srv.claimTask(taskId, userId);
+      },
+      assignTask: function(taskId, userId) {
+        return srv.assignTask(taskId, userId);
+      },
+      unclaimTask: function(taskId) {
+        return srv.unclaimTask(taskId);
       }
     };
   });

@@ -15,7 +15,8 @@ angular
     'ngResource',
     'ngRoute',
     'ngSanitize',
-    'ngTouch'
+    'ngTouch',
+    'angucomplete-alt'
   ])
   .config(function ($routeProvider/**, $compileProvider */) {
     $routeProvider
@@ -24,15 +25,30 @@ angular
         controller: 'DashboardCtrl',
         controllerAs: 'dashboard'
       })
-      .when('/about', {
-        templateUrl: 'views/about.html',
-        controller: 'AboutCtrl',
-        controllerAs: 'about'
+      .when('/tasklist', {
+        templateUrl: 'views/tasklist.html',
+        controller: 'DashboardCtrl',
+        controllerAs: 'dashboard'
+      })
+      .when('/caseinstances', {
+        templateUrl: 'views/caseinstances.html',
+        controller: 'DashboardCtrl',
+        controllerAs: 'dashboard'
+      })
+      .when('/casedefinitions', {
+        templateUrl: 'views/casedefinitions.html',
+        controller: 'DashboardCtrl',
+        controllerAs: 'dashboard'
       })
       .when('/newcase', {
         templateUrl: 'views/newcase.html',
         controller: 'NewCaseCtrl',
         controllerAs: 'newcase'
+      })
+      .when('/casetasks/:caseId', {
+        templateUrl: 'views/casetasks.html',
+        controller: 'CaseDetailsCtrl',
+        controllerAs: 'casedetails'
       })
       .when('/casedetails/:caseId', {
         templateUrl: 'views/casedetails.html',

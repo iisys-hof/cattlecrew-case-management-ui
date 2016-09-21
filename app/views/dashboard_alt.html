@@ -1,0 +1,138 @@
+<div class="page-header">
+	<h1>{{getString('dashboard')}}</h1>
+</div>
+
+<div class="row marketing">
+
+  <div class="col-md-12">
+
+    <a class="btn btn-primary" role="button" ng-click="selectedTab = 2" ng-href="#/newcase" style="margin-bottom: 1.2em;">New Case</a>
+
+    
+
+    <div class="row"> <!-- 1st row: Filters -->
+      <div class="col-md-12">
+           
+        <div style="float:right; margin-left: 1em;">
+          <form class="form-inline" role="form">
+            <div class="form-group">
+  		  <input id="searchText" type="text" class="form-control" placeholder="{{getString('search')}}..." ng-model="searchText">
+            </div>
+            <div class="form-group">
+              <a class="clear" ng-click="searchText=''"><span class="glyphicon glyphicon-remove"></span></a>
+            </div>
+          </form>
+        </div>
+
+        <div style="float:right;">
+          <form class="form-inline" role="form">
+            <div class="form-group">
+              <select id="filterCase" class="form-control" ng-model="selectedCaseDefinition"
+                      ng-options="caseDefinition.key for caseDefinition in caseDefinitionsArrayContainer.caseDefinitionList">
+  		    <option value="">{{getString('filterCase')}}</option>
+              </select>
+            </div>
+          </form>
+        </div>
+
+        <h3 style="margin-top:10px;">{{getString('caseInstances')}}</h3>
+
+      </div>
+    </div><!-- /.row -->
+
+    <div class="row"> <!-- 2nd row: Instances Table -->
+
+      <div class="table-responsive col-md-12">
+
+        <table class="table table-hover">
+          <thead>
+          <tr>
+	    <th>{{getString('businessId')}}</th>
+	    <th>{{getString('case')}}</th>
+	    <th>{{getString('technicalId')}}</th>
+	    <th>{{getString('created')}}</th>
+	    <th>{{getString('lastEdited')}}</th>
+	    <th>{{getString('status')}}</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr
+            ng-repeat="case in resultedCases = (casesOverviewArrayContainer.casesList | orderBy: casesOrderCondition.predicate : casesOrderCondition.reverse | filter : {caseDefinition : selectedCaseDefinition.key} : true | filter : searchText)">
+            <td><a ng-href="#/casedetails/{{case.id}}">{{case.businessKey}}</a></td>
+            <td>{{case.caseDefinition}}</td>
+            <td>{{case.id}}</td>
+            <td><span ng-if="case.createByAsString">{{case.createByAsString}} at {{case.createDateAsString}}</span></td>
+            <td><span ng-if="case.updateByAsString">{{case.updateByAsString}} at {{case.updateDateAsString}}</span></td>
+            <td>{{case.state}}</td>
+            <td>
+              <a ng-href="#/casedetails/{{case.id}}"><span class="glyphicon glyphicon-zoom-in"></span></a>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+
+	      <p class="text-right">{{resultedCases.length}} {{getString('caseInstances')}}</p>
+
+      </div>
+
+    </div><!-- /.row -->
+
+
+    <div class="row" style="margin-top:40px;"> <!-- 3rd row: Definition Filters -->
+      <div class="col-md-12">
+           
+        <div style="float:right; margin-left: 1em;">
+          <form class="form-inline" role="form">
+            <div class="form-group">
+        <input id="searchTextDefintions" type="text" class="form-control" placeholder="{{getString('search')}}..." ng-model="searchTextDefintions">
+            </div>
+            <div class="form-group">
+              <a class="clear" ng-click="searchTextDefintions=''"><span class="glyphicon glyphicon-remove"></span></a>
+            </div>
+          </form>
+        </div>
+
+        <h3 style="margin-top:10px;">{{getString('caseDefinitions')}}</h3>
+
+      </div>
+    </div><!-- /.row -->
+
+    <div class="row"> <!-- 4th row: Definitions Table -->
+
+      <div class="table-responsive col-md-12">
+
+        <table class="table table-hover">
+          <thead>
+          <tr>
+      <th>{{getString('businessKey')}}</th>
+      <th>{{getString('name')}}</th>
+      <th>{{getString('latestVersion')}}</th>
+      <th>{{getString('technicalId')}}</th>
+      <th>{{getString('runningInstances')}}</th>
+      <th>{{getString('actions')}}</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr
+            ng-repeat="def in resultedCaseDefs = (caseDefinitionsArrayContainer.caseDefinitionList | orderBy: casesOrderCondition.predicate : casesOrderCondition.reverse | filter : searchTextDefintions)">
+            <td><a ng-href="#/casedetails/{{case.id}}">{{def.key}}</a></td>
+            <td>{{def.name}}</td>
+            <td>{{def.version}}</td>
+            <td>{{def.id}}</td>
+            <td> - </td>
+            <td>
+              <a href="{{caseModelUrl}}{{def.id}}"><span class="glyphicon glyphicon-pencil"></span></a>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+
+        <p class="text-right">{{resultedCaseDefs.length}} {{getString('caseDefinitions')}}</p>
+
+      </div>
+
+    </div><!-- /.row -->
+
+
+  </div>
+</div>

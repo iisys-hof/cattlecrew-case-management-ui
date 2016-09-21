@@ -1,15 +1,15 @@
-<div class="jumbotron">
-  <h1>Case details</h1>
-
-  <p class="lead">
-    Details about the selected case
-  </p>
+<div class="page-header">
+  <a class="backlink" ng-href="#/">
+    <span class="glyphicon glyphicon-chevron-left"></span>
+  </a>
+  <h1>{{getString('caseDetails')}}</h1>
 </div>
 
 <div class="row marketing">
 
   <ul class="nav nav-tabs">
     <li class="active"><a ng-href="#/casedetails/{{case.data.details.id}}">Case Details</a></li>
+    <li><a ng-href="#/casetasks/{{case.data.details.id}}">Tasks</a></li>
     <li><a ng-href="#/casemodel/{{case.data.details.id}}">Case Model</a></li>
     <li><a ng-href="#/casedecisionhistory/{{case.data.details.id}}">Case Decision History</a></li>
     <li><a ng-href="#/caserawdata/{{case.data.details.id}}">Case Raw Data</a></li>
@@ -65,10 +65,11 @@
             <h4>Documents <span class="badge pull-right">{{case.data.documents.length}}</span></h4>
           </div>
           <div class="panel panel-body">
+            <a class="btn btn-primary" role="button" href="#" style="margin-bottom: 1.2em;"><span class="glyphicon glyphicon-plus"></span><span class="hover-visible"> Connect Document</span></a>
             <table class="table table-hover">
               <tbody>
               <tr ng-repeat="document in resultedDocuments = (case.data.documents | orderBy: document.documentName : false)">
-                <td><span class="glyphicon glyphicon-eye-open"></span></td>
+                <td><span class="glyphicon glyphicon-file"></span></td>
                 <td>
                   <a href ng-click="openURL(document.documentLink)">{{document.documentName}}</a>
                 </td>
@@ -96,7 +97,7 @@
               {{case.data.details.caseDefinition}}<br>
             </div>
             <div class="top-buffer">
-              <strong class="top-buffer">state</strong><br>
+              <strong class="top-buffer">Status</strong><br>
               {{case.data.details.state}}<br>
             </div>
             <div class="top-buffer">

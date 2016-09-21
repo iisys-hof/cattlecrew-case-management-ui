@@ -8,7 +8,7 @@
  * Controller of the cattlecrewCaseManagementUiApp
  */
 angular.module('cattlecrewCaseManagementUiApp')
-  .controller('CaseModelCtrl', function ($scope, $location, $routeParams, caseService, tabbingService) {
+  .controller('CaseModelCtrl', function ($scope, $location, $routeParams, caseService, tabbingService, camundaConstantsService) {
 
     $scope.activeCaseActivityIds = function () {
       var activeCaseActivityIds = '';
@@ -31,6 +31,10 @@ angular.module('cattlecrewCaseManagementUiApp')
       //getting case object reference from cache. it might later then be filled by the
       // case service if this hasn't happened yet
       $scope.case = tabbingService.createNewTabByParentCaseId($routeParams.caseId);
+
+      console.log($scope.case);
+
+      $scope.caseModelUrl = camundaConstantsService.modelUrl;
     };
 
     $scope.initView($routeParams.caseId);

@@ -1,15 +1,14 @@
-<div class="jumbotron">
-  <h1>Raw data</h1>
-
-  <p class="lead">
-    Raw data about the selected case
-  </p>
+<div class="page-header">
+  <a class="backlink" ng-href="#/">
+    <span class="glyphicon glyphicon-chevron-left"></span>
+  </a>
+  <h1>Case Details</h1>
 </div>
-
 <div class="row marketing">
 
   <ul class="nav nav-tabs">
     <li><a ng-href="#/casedetails/{{case.data.details.id}}">Case Details</a></li>
+    <li><a ng-href="#/casetasks/{{case.data.details.id}}">Tasks</a></li>
     <li><a ng-href="#/casemodel/{{case.data.details.id}}">Case Model</a></li>
     <li><a ng-href="#/casedecisionhistory/{{case.data.details.id}}">Case Decision History</a></li>
     <li class="active"><a ng-href="#/caserawdata/{{case.data.details.id}}">Case Raw Data</a></li>
