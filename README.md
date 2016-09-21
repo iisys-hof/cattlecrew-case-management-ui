@@ -4,15 +4,15 @@ This is a fork of the [CattleCrew Case Management UI](https://github.com/opitzco
 
 ## About
 
-The CattleCrew Case Management UI provides an interface to interact with CMMN 1.1 models in the camunda BPM platform via REST. It is development with [AngularJS](https://angularjs.org/) and uses [Grunt](http://gruntjs.com/) as build tool.
+The CattleCrew Case Management UI provides an interface to interact with CMMN 1.1 models in the camunda BPM platform via REST. It is developed with [AngularJS](https://angularjs.org/) and uses [Grunt](http://gruntjs.com/) as build tool.
 
 Additional features in this fork:
 * **Look and feel** like Camunda Cockpit v7.4
 * Changed navigation
 * **Tasklist** with all case tasks of a given user (usually the logged in user). Uses polling.
 * **UserService** to enrich tasks and cases with fullnames and other (remote) user data.
-** Connection to our [Apache Shindig](https://shindig.apache.org/) users + caching.
-** Possibility to implement your own UserService connection.
+  * Connection to our [Apache Shindig](https://shindig.apache.org/) users + caching.
+  * Possibility to implement your own UserService connection.
 * **Claim task** (and unclaim)
 * **Assign task** (with autocompletion for users in remote directory)
 
