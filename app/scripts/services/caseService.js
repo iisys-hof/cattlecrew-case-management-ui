@@ -20,6 +20,10 @@ angular.module('cattlecrewCaseManagementUiApp')
 
     srv._userService = userService;
 
+    var vars = {};
+    vars._caseFileId = 'caseFileId';
+    vars._caseFileName = 'caseFileName';
+
     //
     // Service logic
     //
@@ -84,6 +88,8 @@ angular.module('cattlecrewCaseManagementUiApp')
       return srv._cache.getCaseDefinitionsArrayContainer();
     };
 
+    // tasks:
+
     srv.claimTask = function(taskId, userId) {
       srv._caseService.claimTask(taskId, userId);
     };
@@ -94,6 +100,32 @@ angular.module('cattlecrewCaseManagementUiApp')
 
     srv.unclaimTask = function(taskId) {
       srv._caseService.unclaimTask(taskId);
+    };
+
+    // variables:
+
+    srv.setCaseVariable = function(caseId, variable, variableValue) {
+      srv._caseService.setCaseVariable(caseId, variable, variableValue);
+    };
+
+    srv._setVarCaseFileId = function(caseId, fileId) {
+      srv.setCaseVariable(caseId, vars._caseFileId, fileId);
+    };
+
+    srv._setVarCaseFileName = function(caseId, fileName) {
+      srv.setCaseVariable(caseId, vars._caseFileName, fileName);
+    };
+
+    srv.putDocumentFolderForCase = function(caseId, folderId, folderName) {
+      srv._cache.putDocumentFolderForCase(folderId, folderName, caseId);
+      srv._setVarCaseFileId(caseId, folderId);
+      srv._setVarCaseFileName(caseId, folderName);
+    };
+
+    srv.clearDocumentsForCase = function(caseId) {
+      srv._cache.clearDocumentsForCase(caseId);
+      srv._setVarCaseFileId(caseId, '');
+      srv._setVarCaseFileName(caseId, '');
     };
 
     //
@@ -150,6 +182,15 @@ angular.module('cattlecrewCaseManagementUiApp')
       },
       unclaimTask: function(taskId) {
         return srv.unclaimTask(taskId);
+      },
+      setCaseVariable: function(caseId, variable, variableValue) {
+        return srv.setCaseVariable(caseId, variable, variableValue);
+      },
+      putDocumentFolderForCase: function(caseId, folderId, folderName) {
+        srv.putDocumentFolderForCase(caseId, folderId, folderName);
+      },
+      clearDocumentsForCase: function(caseId) {
+        srv.clearDocumentsForCase(caseId);
       }
     };
   });

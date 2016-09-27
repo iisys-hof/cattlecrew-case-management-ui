@@ -408,6 +408,19 @@ module.exports = function (grunt) {
       }
     },
 
+    // Compresses all files from dist to build as .tar.gz
+    compress: {
+      dist: {
+        options: {
+          archive: 'build/cmmn-ui.tar.gz',
+          mode: 'tgz'
+        },
+        expand: true,
+        cwd: '<%= yeoman.dist %>',
+        src: ['**/*']
+      }
+    },
+
     // Run some tasks in parallel to speed up the build process
     concurrent: {
       server: [
@@ -503,7 +516,8 @@ module.exports = function (grunt) {
     'filerev',
     'usemin',
     'htmlmin',
-    'war'
+//    'war',
+    'compress:dist'
   ]);
 
   grunt.registerTask('default', [

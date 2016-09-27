@@ -291,3 +291,17 @@ tr.description>td {
 .nav-tabs > li.active > a:hover {
   background-color: transparent;
 }
+
+/* tables */
+
+.in-panel-table {
+  table-layout: fixed;
+}
+.in-panel-table td {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.in-panel-table td:nth-child(1) {
+  width: 20px;
+}

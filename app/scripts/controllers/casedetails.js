@@ -8,7 +8,7 @@
  * Controller of the cattlecrewCaseManagementUiApp
  */
 angular.module('cattlecrewCaseManagementUiApp')
-  .controller('CaseDetailsCtrl', function ($scope, $location, $routeParams, caseService, userService, tabbingService, $window, localizationService, $locale, $route) {
+  .controller('CaseDetailsCtrl', function ($scope, $location, $routeParams, caseService, userService, documentService, tabbingService, $window, localizationService, $locale, $route) {
 
     $scope.setLocale = function(id){
       $locale.id = id;
@@ -30,10 +30,12 @@ angular.module('cattlecrewCaseManagementUiApp')
       $scope.urlForUserAutocomplete = userService.getUrlForUserAutocomplete();
       $scope.isLoading = false;
 
-      $scope.pollingActive = caseService.pollingActive();
-      console.log('isActive: '+$scope.pollingActive);
+      $scope.possibleCaseFolders = documentService.getPossibleCaseFolders();
+      $scope.possibleCaseFoldersType = documentService.getPossibleCaseFoldersType();
 
-      console.log($scope.case);
+      $scope.pollingActive = caseService.pollingActive();
+
+      console.log('CaseDetailsCtrl', $scope.case);
     };
 
     $scope.initView($routeParams.caseId);
@@ -139,6 +141,20 @@ angular.module('cattlecrewCaseManagementUiApp')
 
     $scope.openURL = function(url) {
       $window.open(url);
+    };
+
+    $scope.specifyDocumentFolder = function(folderId, folderName) {
+      caseService.putDocumentFolderForCase($scope.caseId, folderId, folderName);
+      setTimeout(function(){
+        $route.reload();
+      }, 1000);
+    };
+
+    $scope.disconnectDocumentFolder = function() {
+      caseService.clearDocumentsForCase($scope.caseId);
+      setTimeout(function(){
+        $route.reload();
+      }, 1000);
     };
 
 });

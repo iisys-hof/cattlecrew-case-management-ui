@@ -8,7 +8,7 @@
  * Controller of the cattlecrewCaseManagementUiApp
  */
 angular.module('cattlecrewCaseManagementUiApp')
-  .controller('DashboardCtrl', function($scope, $locale, caseService, localizationService, camundaConstantsService) {
+  .controller('DashboardCtrl', function($scope, $locale, caseService, localizationService, camundaConstantsService, documentService) {
 
     $scope.currentUser = 'baerbel';
 
@@ -38,6 +38,8 @@ angular.module('cattlecrewCaseManagementUiApp')
       caseService.updateCasesOverview();
       $scope.casesOverviewArrayContainer = caseService.getCasesOverviewArrayContainer();
       caseService.startPolling();
+
+      documentService.startPossibleCaseFoldersPolling();
 
       console.log('$scope.casesOverviewArrayContainer',$scope.casesOverviewArrayContainer);
       console.log('$scope.taskList',$scope.taskList);

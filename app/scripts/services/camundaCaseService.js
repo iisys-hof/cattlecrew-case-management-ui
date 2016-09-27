@@ -8,7 +8,7 @@
  * Factory in the cattlecrewCaseManagementUiApp.
  */
 angular.module('cattlecrewCaseManagementUiApp')
-  .factory('camundaCaseService', function ($resource, $q, $timeout, camundaConstantsService, camundaCacheService, utilService, userService) {
+  .factory('camundaCaseService', function ($resource, $q, $timeout, camundaConstantsService, camundaCacheService, utilService, userService, documentService) {
     //
     // local namespace
     //
@@ -51,6 +51,10 @@ angular.module('cattlecrewCaseManagementUiApp')
       get: {method: 'GET', isArray: true}
     });
 
+    srv._resourceCaseVariables = $resource(srv._baseUrl + '/case-instance/:caseId/variables', {}, {
+      get: {method: 'GET', isArray: false}
+    });
+
     srv._resourceActiveTasks = $resource(srv._baseUrl + '/history/case-activity-instance?active=true&caseInstanceId=:caseId', {}, {
       get: {method: 'GET', isArray: true}
     });
@@ -85,6 +89,10 @@ angular.module('cattlecrewCaseManagementUiApp')
 
     srv._resourceUnclaimTask = $resource(srv._baseUrl + '/task/:id/unclaim', {}, {
       unclaim: {method: 'POST'}
+    });
+
+    srv._resourceSetCaseVariable = $resource(srv._baseUrl + '/case-instance/:caseId/variables/:variable', {}, {
+      set: {method: 'PUT'}
     });
 
     srv.loadCases = function() {
@@ -129,6 +137,7 @@ angular.module('cattlecrewCaseManagementUiApp')
       srv.enrichWithActivities(caseId);
       srv.enrichWithHumanTasks(caseId);
       srv.enrichWithDetailsInformation(caseId);
+      srv.enrichWithVariables(caseId);
 
       var promise1 = srv.enrichForAuditTrail(caseId);
       var promise2 = srv.enrichWithMilestonesAuditInformation(caseId);
@@ -174,6 +183,33 @@ angular.module('cattlecrewCaseManagementUiApp')
 
         camundaCacheService.putTasksForCase(tasks, caseId);
       });
+    };
+
+    srv.enrichWithVariables = function(caseId) {
+      var variables = srv._resourceCaseVariables.get({caseId: caseId}).$promise;
+
+      $q.all([variables]).then(function(result) {
+        // caseFileId:
+        if(result[0].caseFileId && result[0].caseFileId.value) {
+          var folderId = null,
+              folderName = null;
+          if(result[0].caseFileId) {
+            folderId = result[0].caseFileId.value;
+          }
+          if(result[0].caseFileName) {
+            folderName = result[0].caseFileName.value;
+          }
+          
+          camundaCacheService.putDocumentFolderForCase(folderId, folderName, caseId);
+          srv.enrichWithDocuments(folderId, caseId);
+        }
+      });
+    };
+
+    srv.enrichWithDocuments = function(folderId, caseId) {
+      if(folderId) {
+        documentService.updateCaseDocuments(folderId, caseId);
+      }
     };
 
     srv.updateTasklistForAssignee = function(assigneeUserId) {
@@ -338,6 +374,19 @@ angular.module('cattlecrewCaseManagementUiApp')
       });
     };
 
+    srv.setCaseVariable = function(caseId, variable, variableValue) {
+      srv._resourceSetCaseVariable.set(
+          {caseId: caseId, variable: variable}, 
+          {value: variableValue, type: 'String'}, 
+          function(result) {
+            console.log('Variable ' +variable+' successfully set as ' + variableValue+'.', result);
+          }, function(error) {
+            console.log('Error occurred during setting variable ' + variable + ': ' + error);
+          }
+        );
+    };
+    
+
     //
     // Public API
     //
@@ -380,6 +429,9 @@ angular.module('cattlecrewCaseManagementUiApp')
       },
       unclaimTask: function(taskId) {
         srv.unclaimTask(taskId);
+      },
+      setCaseVariable: function(caseId, variable, variableValue) {
+        srv.setCaseVariable(caseId, variable, variableValue);
       }
     };
   });

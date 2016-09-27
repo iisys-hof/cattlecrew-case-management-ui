@@ -40,6 +40,11 @@ angular
         controller: 'DashboardCtrl',
         controllerAs: 'dashboard'
       })
+      .when('/casedefinition-details', {
+        templateUrl: 'views/casedefinitiondetails.html',
+        controller: 'CaseDefCtrl',
+        controllerAs: 'casedefdetails'
+      })
       .when('/newcase', {
         templateUrl: 'views/newcase.html',
         controller: 'NewCaseCtrl',

@@ -41,15 +41,15 @@ angular.module('cattlecrewCaseManagementUiApp')
         parent: [],
         auditTrail: [],
         comments: null,
+        documentFolder: {
+          id: null,
+          name: null
+        },
         documents: [
-          {
+ /*         {
             documentName: 'claimfile.pdf',
             documentLink: 'assets/claimfile.pdf'
-          },
-          {
-            documentName: 'casedocument.pdf',
-            documentLink: 'assets/casedocument.pdf'
-          }
+          } */
         ],
         desicions: []
       }
@@ -135,6 +135,23 @@ angular.module('cattlecrewCaseManagementUiApp')
         });
 
       });
+    };
+
+    srv.putDocumentFolderForCase = function(folderId, folderName, caseId) {
+      srv.initCaseInCache(caseId);
+      srv._cases[caseId].data.documentFolder.id = folderId;
+      srv._cases[caseId].data.documentFolder.name = folderName;
+    };
+
+    srv.putDocumentsForCase = function(documentArray, caseId) {
+      if(documentArray) {
+        srv.initCaseInCache(caseId);
+        srv._cases[caseId].data.documents = documentArray;
+      }
+    };
+
+    srv.clearDocumentsForCase = function(caseId) {
+      srv._cases[caseId].data.documents = [];
     };
 
     srv.putMilestonesForCase = function(milestonesFromRest, caseId) {
@@ -380,6 +397,15 @@ angular.module('cattlecrewCaseManagementUiApp')
       },
       putTasklistinCache: function(tasklist) {
         srv.putTasklistinCache(tasklist);
+      },
+      putDocumentFolderForCase: function(folderId, folderName, caseId) {
+        srv.putDocumentFolderForCase(folderId, folderName, caseId);
+      },
+      putDocumentsForCase: function(documentArray, caseId) {
+        srv.putDocumentsForCase(documentArray, caseId);
+      },
+      clearDocumentsForCase: function(caseId) {
+        srv.clearDocumentsForCase(caseId);
       },
       putMilestonesForCase: function(milestonesFromRest, caseId) {
         srv.putMilestonesForCase(milestonesFromRest, caseId);

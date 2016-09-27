@@ -65,13 +65,26 @@
             <h4>Documents <span class="badge pull-right">{{case.data.documents.length}}</span></h4>
           </div>
           <div class="panel panel-body">
-            <a class="btn btn-primary" role="button" href="#" style="margin-bottom: 1.2em;"><span class="glyphicon glyphicon-plus"></span><span class="hover-visible"> Connect Document</span></a>
-            <table class="table table-hover">
+            <!-- <a ng-if="!case.data.documentFolder.id" class="btn btn-primary" role="button" possible-folders-dialog="{{case.data.details.id}}"><span class="glyphicon glyphicon-plus"></span><span class="hover-visible"> Specify document folder</span></a> -->
+
+            <div ng-if="!case.data.documentFolder.id" class="list-group">
+              <p><span class="glyphicon glyphicon-folder-open" style="margin-right:0.3em;"></span>  Specify document folder:</p>
+              <div ng-repeat="folder in possibleCaseFolders">
+                <a ng-click="specifyDocumentFolder(folder.id, folder.title);" class="list-group-item">
+                  <h4 class="list-group-item-heading">{{folder.title}} <small>({{possibleCaseFoldersType}})</small></h4>
+                </a>
+              </div>
+            </div>
+
+            <div ng-if="case.data.documentFolder.id">
+              <p><span class="glyphicon glyphicon-folder-open" style="margin-right:0.3em;"></span>  {{case.data.documentFolder.name}} <a ng-click="disconnectDocumentFolder();"><span class="glyphicon glyphicon-remove"></span></a>:</p>
+            </div>
+            <table ng-if="case.data.documentFolder.id" class="table table-hover in-panel-table">
               <tbody>
               <tr ng-repeat="document in resultedDocuments = (case.data.documents | orderBy: document.documentName : false)">
                 <td><span class="glyphicon glyphicon-file"></span></td>
                 <td>
-                  <a href ng-click="openURL(document.documentLink)">{{document.documentName}}</a>
+                  <a ng-href="{{document.documentLink}}">{{document.documentName}}</a>
                 </td>
               </tr>
               </tbody>
