@@ -54,3 +54,21 @@ For autocompletion this [angucomplete-alt](https://github.com/ghiden/angucomplet
 ## License
 
 Licensed under the [MIT license](./LICENSE).
+
+##Screenshots
+
+Dashboard with overview of all cases the user participates in
+
+![Dashboard](https://github.com/iisys-hof/cattlecrew-case-management-ui/blob/master/SCHub_CaseUI_Dashboard.png "Dashboard")
+
+Case details with a nice overview of associated documents from Nuxeo, audit trail (username is still dummy), stakeholders (all users involved in this case), available case activities (not started yet) and completed activities.
+
+![Details](https://github.com/iisys-hof/cattlecrew-case-management-ui/blob/master/SCHub_CaseUI_Details.png "Case details")
+
+Integrated tasklist showing associated tasks including the option to claim the task or assign it to a fellow colleague
+
+![Tasks](https://github.com/iisys-hof/cattlecrew-case-management-ui/blob/master/SCHub_CaseUI_Tasks.png "Case specific task list")
+
+Read-only view of the case definition, currently without highlighting of completed and active tasks
+
+![Model](https://github.com/iisys-hof/cattlecrew-case-management-ui/blob/master/SCHub_CaseUI_Model.png "Model")
