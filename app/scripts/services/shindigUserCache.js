@@ -25,7 +25,8 @@ angular.module('cattlecrewCaseManagementUiApp')
         id: null,
         fullname: null,
         skills: null,
-        organizations: []
+        organizations: [],
+        thumbnailUrl: null
       }
     };
 
@@ -58,11 +59,18 @@ angular.module('cattlecrewCaseManagementUiApp')
       }
     };
 
-    srv.putNamesForUser = function(fullname, userId) {
+    srv.putDetailsForUser = function(fullname, thumbnailUrl, userId) {
       srv.initUserInCache(userId);
 
       srv._users[userId].data.fullname = fullname;
+      srv._users[userId].data.thumbnailUrl = thumbnailUrl;
       srv._users[userId].valid = true;
+    };
+
+    srv.putSkillsForUser = function(skills, userId) {
+      srv.initUserInCache(userId);
+
+      srv._users[userId].data.skills = skills;
     };
 
 
@@ -73,8 +81,11 @@ angular.module('cattlecrewCaseManagementUiApp')
       getUser: function(userId) {
         return srv.getUser(userId);
       },
-      putNamesForUser: function(fullname, userId) {
-        return srv.putNamesForUser(fullname, userId);
+      putDetailsForUser: function(fullname, thumbnailUrl, userId) {
+        return srv.putDetailsForUser(fullname, thumbnailUrl, userId);
+      },
+      putSkillsForUser: function(skills, userId) {
+        return srv.putSkillsForUser(skills, userId);
       }
     };
   });

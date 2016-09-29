@@ -70,7 +70,7 @@
           <tbody>
           <tr
             ng-repeat="case in resultedCases = (casesOverviewArrayContainer.casesList | orderBy: casesOrderCondition.predicate : casesOrderCondition.reverse | filter: {caseDefinition : selectedCaseDefinition.key} : true | filter: searchText) | filter: {createUserId:currentUser}">
-            <td><a ng-href="#/casetasks/{{case.id}}"><span class="glyphicon glyphicon-zoom-in"></span> {{case.businessKey}}</a></td>
+            <td><a ng-href="#/casedetails/{{case.id}}"><span class="glyphicon glyphicon-zoom-in"></span> {{case.businessKey}}</a></td>
             <td>{{case.caseDefinition}}</td>
             <td><span ng-if="case.createByAsString">{{case.createByAsString}} at {{case.createDateAsString}}</span></td>
             <td><span ng-if="case.updateByAsString">{{case.updateByAsString}} at {{case.updateDateAsString}}</span></td>

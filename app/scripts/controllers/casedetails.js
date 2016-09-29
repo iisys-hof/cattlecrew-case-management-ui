@@ -144,15 +144,19 @@ angular.module('cattlecrewCaseManagementUiApp')
     };
 
     $scope.specifyDocumentFolder = function(folderId, folderName) {
+      $scope.isLoading = true;
       caseService.putDocumentFolderForCase($scope.caseId, folderId, folderName);
       setTimeout(function(){
+        $scope.isLoading = false;
         $route.reload();
       }, 1000);
     };
 
     $scope.disconnectDocumentFolder = function() {
+      $scope.isLoading = true;
       caseService.clearDocumentsForCase($scope.caseId);
       setTimeout(function(){
+        $scope.isLoading = false;
         $route.reload();
       }, 1000);
     };

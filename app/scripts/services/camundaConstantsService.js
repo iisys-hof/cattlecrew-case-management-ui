@@ -13,7 +13,7 @@ angular.module('cattlecrewCaseManagementUiApp')
     modelUrl : 'https://broton.sc-hub.de/cmmnjs/?caseId=',
     nuxeoBaseUrl: 'https://broton.sc-hub.de/nuxeo',
     nuxeoApiBaseUrl: 'https://broton.sc-hub.de/nuxeo/api/v1',
-    serverPollingDelay : 5000,
+    serverPollingDelay : 10000,
     serverPollingPauseDelay : 30000,
     shindigUrl : 'https://broton.sc-hub.de/shindig/social/rest',
     shindigUrlForUserAutocomplete : 'https://broton.sc-hub.de/shindig/social/rest/user?fields=id,name,displayName&filterBy=displayName&filterOp=contains&filterValue=',

@@ -31,6 +31,9 @@ h1, h2, h3, h4 {
     margin: 20px 0 30px;
     border-bottom: 1px solid #eee;
 }
+.page-header h1 {
+  display: inline;
+}
 
 /* Everything but the jumbotron gets side spacing for mobile first views */
 .header,
@@ -79,7 +82,7 @@ h1, h2, h3, h4 {
 
 /* Supporting marketing content */
 .marketing {
-  margin: 40px 0;
+  margin: 0;
 }
 .marketing p + h4 {
   margin-top: 28px;
@@ -255,9 +258,11 @@ tr.description>td {
 
 /* Loading animation container */
 .loading {
+  display: inline-block;
   position: relative;
   width: 28px;
   height: 28px;
+  margin-left: 10px;
 }
 
 /* Spinning circle (inner circle) */
@@ -304,4 +309,30 @@ tr.description>td {
 }
 .in-panel-table td:nth-child(1) {
   width: 20px;
+}
+
+/* stakeholders: */
+.stakeholders p {
+  margin: 0;
+  margin-top: 0.5em;
+  clear: left;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.stakeholders img {
+  height: 2.7em;
+  float: left;
+  margin-right: 0.5em;
+}
+.stakeholders small {
+  display: block;
+  white-space: nowrap;
+  margin: 0.3em 0;
+}
+
+/* case model */
+
+.djs-container .highlight .djs-visual>:nth-child(1) {
+    fill: #54D16F !important;
 }

@@ -31,22 +31,39 @@ angular.module('cattlecrewCaseManagementUiApp')
       get: {method: 'GET', isArray: false}
     });
 
-    /*
-    srv.loadAllUsers = function() {
-    	return srv._resourceAllUsers.query().$promise;
-    };
-    */
+    srv._resourceUserSkills = $resource(srv._baseUrl + '/skills/:userId', {}, {
+      get: {method: 'GET', isArray: false}
+    });
+
+
 
     srv.loadSingleUser = function(userId) {
         return srv._resourceSingleUser.get({userId: userId}).$promise;
     };
 
+    srv.loadUserSkills = function(userId) {
+        return srv._resourceUserSkills.get({userId: userId}).$promise;
+    };
+
     srv.updateSingleUser = function(userId) {
         if(userId) {
+            // name:
             srv.loadSingleUser(userId).then(function(result) {
-                var fullname = result.entry.displayName;
+                var fullname = result.entry.displayName,
+                    thumbnailUrl = result.entry.thumbnailUrl;
 
-                shindigUserCache.putNamesForUser(fullname, userId);
+                shindigUserCache.putDetailsForUser(fullname, thumbnailUrl, userId);
+            });
+            // skills:
+            srv.loadUserSkills(userId).then(function(result) {
+                if(result && result.list) {
+                    var skills = [];
+                    result.list.forEach(function(element) {
+                      skills.push( element.name );
+                    });
+
+                    shindigUserCache.putSkillsForUser(skills, userId);
+                }
             });
         }
     };

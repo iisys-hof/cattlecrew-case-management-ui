@@ -13,6 +13,14 @@
     <span class="glyphicon glyphicon-chevron-left"></span>
   </a>
   <h1>{{getString('caseDetails')}}</h1>
+
+  <div ng-if="isLoading" class="loading">
+    <div class="spinner">   
+      <div class="mask"><!-- mask of the quarter of circle -->
+        <div class="maskedCircle"></div><!-- Inner masked circle -->
+      </div>
+    </div>
+  </div>
 </div>
 
 <div class="row marketing">
@@ -30,17 +38,6 @@
     <div class="panel-group">
 
       <div class="col-md-9">
-
-        <div ng-if="isLoading" class="loading" style="float: left;">
-          <!-- We make this div spin -->
-          <div class="spinner">
-            <!-- Mask of the quarter of circle -->
-            <div class="mask">
-              <!-- Inner masked circle -->
-              <div class="maskedCircle"></div>
-            </div>
-          </div>
-        </div>
 
         <div class="filters clearfix">         
           <div style="float:right; margin-left: 1em;">
@@ -81,10 +78,10 @@
             </thead>
             <tbody>
             <tr
-              ng-repeat-start="task in humanTasks = (case.data.humanTasks | orderBy: casesOrderCondition.predicate : casesOrderCondition.reverse | filter : searchTask)">
+              ng-repeat-start="task in humanTasks = (case.data.humanTasks | orderBy: casesOrderCondition.predicate : casesOrderCondition.reverse | filter : searchTask )">
               <td><a ng-click="showDescription = !showDescription">{{task.name}}</a></td>
               <td>
-                <span ng-show="task.assignee">{{task.assignee.data.fullname}} <a ng-click="unclaimTask(task.id)" data-insert-loading-animation>
+                <span ng-show="task.assignee">{{task.assignee.data.fullname}} <a ng-if="!task.endTime" ng-click="unclaimTask(task.id)">
                   <span class="glyphicon glyphicon-remove"></span></a>
                 </span>
                 <div ng-if="!task.assignee">
@@ -126,22 +123,19 @@
 
         <div class="panel panel-default">
           <div class="panel panel-heading">
-            <h4>What happened so far <span class="badge pull-right">{{case.data.milestones.length}}</span></h4>
+            <h4>Stakeholders<span class="badge pull-right">{{case.data.stakeholders.length}}</span></h4>
           </div>
           <div class="panel panel-body">
-            <ul class="timeline" ng-repeat="milestone in resultedMilestones = (case.data.milestones | orderBy: 'state')">
-              <li ng-class="$odd ? 'timeline-inverted' : 'timeline'">
-                <div class="timeline-badge">
-                  <div ng-show="milestone.state === 'ATTAINED'" class="glyphicon glyphicon-ok"></div>
-                  <div ng-show="milestone.state === 'NOT_ATTAINED'" class="glyphicon glyphicon-time"></div>
-                </div>
-                <div class="timeline-panel">
-                  <div class="timeline-heading">
-                    <h4 class="timeline-title">{{milestone.objectDisplayName}}</h4>
-                  </div>
-                </div>
-              </li>
-            </ul>
+            <div class="list-group">
+              <a ng-repeat="(stakeholderId, stakeholder) in case.data.stakeholders" class="list-group-item stakeholders clearfix">
+                <img ng-if="stakeholder.user.data.thumbnailUrl" src="{{stakeholder.user.data.thumbnailUrl}}" alt="{{stakeholder.user.data.fullname}}" />
+                <h4 class="list-group-item-heading">{{stakeholder.user.data.fullname}} 
+                  <small ng-show="stakeholder.isCreator === true">(Case Creator)</small>
+                  <small ng-if="stakeholder.assigneeTasks[0]">({{stakeholder.assigneeTasks[0].name}}<span ng-if="stakeholder.assigneeTasks.length > 1">,...</span>)</small>
+                </h4>
+                <p ng-if="stakeholder.user.data.skills.length > 0"><span class="glyphicon glyphicon-tags" style="font-size:0.7em; margin-right:0.5em;"></span> <span ng-repeat="skill in stakeholder.user.data.skills | limitTo: 3">{{skill}}{{$last ? '' : ', '}}</span></p>
+              </a>
+            </div>
           </div>
         </div>
 

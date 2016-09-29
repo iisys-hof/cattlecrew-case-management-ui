@@ -37,6 +37,7 @@ angular.module('cattlecrewCaseManagementUiApp')
         details: null,
         milestones: null,
         activities: null,
+        humanTasks: null,
         children: [],
         parent: [],
         auditTrail: [],
@@ -51,8 +52,17 @@ angular.module('cattlecrewCaseManagementUiApp')
             documentLink: 'assets/claimfile.pdf'
           } */
         ],
-        desicions: []
+        desicions: [],
+        stakeholders:  {}
       }
+    };
+
+    srv._stakeholderTemplate = {
+      displayName: null,
+      isCreator: false,
+      assigneeTasks: [],
+      skills: [],
+      fullname: null
     };
 
     /**
@@ -190,7 +200,7 @@ angular.module('cattlecrewCaseManagementUiApp')
       srv.initCaseInCache(caseId);
 
       var activities = [];
-      console.log('activitiesFromRest',activitiesFromRest);
+//      console.log('activitiesFromRest',activitiesFromRest);
 
       activitiesFromRest.forEach(function(activity) {
         var name = activity.caseActivityName;
@@ -212,7 +222,7 @@ angular.module('cattlecrewCaseManagementUiApp')
       srv.initCaseInCache(caseId);
 
       var tasks = [];
-      console.log('tasksFromRest',tasksFromRest);
+//      console.log('tasksFromRest',tasksFromRest);
 
       tasksFromRest.forEach(function(activity) {
         var shortId = activity.id.substring(0, 8),
@@ -245,10 +255,54 @@ angular.module('cattlecrewCaseManagementUiApp')
           startTime: activity.startTime,
           startTimeAsString: startTimeAsString
         });
+
+        // add stakeholdesr:
+        if(activity.assignee) {
+          var assigneeId = activity.assignee;
+          if(assigneeId.data.id) {
+            assigneeId = assigneeId.data.id;
+          }
+          srv.addStakeholderAssignee(caseId, assigneeId, activity.id, activity.name);
+        }
       });
 
       srv._cases[caseId].data.humanTasks = tasks;
     };
+
+    srv.initStakeholderInCase = function(caseId, stakeholderId) {
+      srv.initCaseInCache(caseId);
+      if(!srv._cases[caseId].data.stakeholders[stakeholderId]) {
+        srv._cases[caseId].data.stakeholders[stakeholderId] = angular.copy(srv._stakeholderTemplate);
+      }
+    };
+
+    srv.addStakeholderToCase = function(caseId, stakeholderId, isCreator, assigneeTaskId, assigneeTaskName) {
+      srv.initStakeholderInCase(caseId, stakeholderId);
+      var stakeholder = srv._cases[caseId].data.stakeholders[stakeholderId];
+
+      stakeholder.id = stakeholderId;
+      stakeholder.user =  userService.getUserById(stakeholderId);
+
+      if(isCreator) {
+        stakeholder.isCreator = true;
+      }
+      if(assigneeTaskId) {
+        // check if task is already assigned to stakeholder:
+        
+
+        var task = { id: assigneeTaskId };
+        if(assigneeTaskName) {
+          task.name = assigneeTaskName;
+        }
+        stakeholder.assigneeTasks.push(task);
+      }
+    };
+
+    srv.addStakeholderAssignee = function(caseId, stakeholderId, assigneeTaskId, assigneeTaskName) {
+      srv.addStakeholderToCase(caseId, stakeholderId, null, assigneeTaskId, assigneeTaskName);
+    };
+
+
 
     srv.putDetailsInformationForCase = function(details) {
       srv.initCaseInCache(details.id);
@@ -265,13 +319,14 @@ angular.module('cattlecrewCaseManagementUiApp')
       srv.initCaseInCache(caseId);
 
       audits.forEach(function(element) {
+//        console.log('AUDIT:', element);
         var objectDisplayName = element.completed ? 'Activity completed: ' : 'Activity started: ';
 
         srv._cases[caseId].data.auditTrail.push({
           objectDisplayName: objectDisplayName + element.caseActivityName,
           caseActivityId: element.caseActivityId,
           type: 'ACTIVITY_EVENT',
-          updatedBy: 'John Doe',
+          updatedBy: null,
           updatedDate: new Date(element.createTime),
           updatedDateAsString: srv.formatIsoDateString(element.createTime)
         });
@@ -294,7 +349,7 @@ angular.module('cattlecrewCaseManagementUiApp')
       return  {
         objectDisplayName: objectDisplayName,
         type: 'MILESTONE_EVENT',
-        updatedBy: 'John Doe',
+        updatedBy: null,
         updatedDate: new Date(time),
         updatedDateAsString: srv.formatIsoDateString(time)
       };
@@ -321,6 +376,9 @@ angular.module('cattlecrewCaseManagementUiApp')
       if(element.closed) {
         state = 'Closed';
       }
+
+      // add creator as stakeholder:
+      srv.addStakeholderToCase(element.id, element.createUserId, true);
 
       return {
         // original attributes
