@@ -2,7 +2,7 @@
   "name": "cattlecrewcasemanagementui",
   "private": true,
   "devDependencies": {
-    "autoprefixer": "^6.4.0",
+    "autoprefixer": "^9.7.6",
     "grunt": "^1.0.1",
     "grunt-angular-templates": "^1.0.4",
     "grunt-concurrent": "^2.3.0",
